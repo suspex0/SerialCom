@@ -9,7 +9,7 @@ COM::SerialPort::SerialPort()
     this->connected = false;
     this->handle = CreateFileA(static_cast<LPCSTR>(portName), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, NULL);
 
-    if (this->handle == INVALID_HANDLE_VALUE)
+    if (this->handle == INVALID_HANDLE_VALUE || this->handle == NULL)
     {
         if (GetLastError() == ERROR_FILE_NOT_FOUND)
         {
