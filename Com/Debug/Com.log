@@ -1,0 +1,7 @@
+﻿  main.cpp
+C:\Users\coffee\source\repos\Com\Com\logger.hpp(67,21): error C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\coffee\source\repos\Com\Com\logger.hpp(124,27): error C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\coffee\source\repos\Com\Com\logger.hpp(168): message : see reference to function template instantiation 'void Common::logger::log<>(Common::log_color,std::string_view,std::string_view)' being compiled
+C:\Users\coffee\source\repos\Com\Com\main.cpp(12): message : see reference to function template instantiation 'void Common::log_info<>(std::string_view)' being compiled
+  Serial.cpp
+  Generating Code...
