@@ -9,7 +9,7 @@ int main()
 	using namespace Common;
 	auto logger_instance = std::make_unique<logger>();
 	
-	const char* test_msg = "150:10;";
+	const char* test_msg = "150:10;\n";
 
 	COM::SerialPort* SerialPort;
 

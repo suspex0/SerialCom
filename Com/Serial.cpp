@@ -13,11 +13,11 @@ COM::SerialPort::SerialPort()
     {
         if (GetLastError() == ERROR_FILE_NOT_FOUND)
         {
-            std::cerr << "ERROR: Handle was not attached.Reason : " << portName << " not available\n";
+            LOG_ERROR("Handle is invalid! ", portName, " is not available");
         }
         else
         {
-            std::cerr << "ERROR!!!\n";
+            LOG_ERROR("ERROR UNKNOWN");
         }
 
     }
@@ -27,7 +27,7 @@ COM::SerialPort::SerialPort()
 
         if (!GetCommState(this->handle, &dcbSerialParameters))
         {
-            std::cerr << "Failed to get current serial parameters\n";
+            LOG_ERROR("Failed to get serial-port parameters.");
         }
         else
         {
@@ -39,7 +39,7 @@ COM::SerialPort::SerialPort()
 
             if (!SetCommState(handle, &dcbSerialParameters))
             {
-                std::cout << "ALERT: could not set serial port parameters\n";
+                LOG_ERROR("Could not set serial port parameters!");
             }
             else
             {
