@@ -1,11 +1,8 @@
 #include "Serial.h"
 #include "logger.hpp"
 
-COM::SerialPort::SerialPort()
+COM::SerialPort::SerialPort(const char* portName)
 {
-    // Get user input for device selection
-    get_port();
-
     this->connected = false;
     this->handle = CreateFileA(static_cast<LPCSTR>(portName), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -60,9 +57,9 @@ COM::SerialPort::~SerialPort()
     }
 }
 
-// returns read bytes count, or if error occurs, returns 0
 int COM::SerialPort::read(const char* buffer, unsigned int buf_size)
 {
+    // returns read bytes count, or if error occurs, returns 0
     DWORD bytesRead{};
     unsigned int toRead = 0;
 
@@ -103,6 +100,15 @@ bool COM::SerialPort::write(const char* buffer, unsigned int buf_size)
     return true;
 }
 
+void COM::SerialPort::move_mouse(int x, int y)
+{
+    char buffer[COM_MAX_LENGTH];
+    sprintf(buffer, m_format, x, y);
+
+    if (!this->write(buffer, COM_MAX_LENGTH))
+        LOG_ERROR("Error while writing to serial-port.");
+}
+
 bool COM::SerialPort::is_connected()
 {
     if (!ClearCommError(this->handle, &this->errors, &this->status))
@@ -113,7 +119,14 @@ bool COM::SerialPort::is_connected()
     return this->connected;
 }
 
-bool COM::SerialPort::get_port() //added function to find the present serial 
+void COM::SerialPort::close()
+{
+    this->~SerialPort();
+}
+
+// Namespace only
+
+bool COM::select_port(std::string& portName)  
 {
     struct DosDevice
     {
@@ -131,7 +144,7 @@ bool COM::SerialPort::get_port() //added function to find the present serial
         std::string str = "COM" + std::to_string(i); 
         DWORD test = QueryDosDeviceA(str.c_str(), lpTargetPath, 5000);
 
-        if (test != 0) //QueryDosDevice returns zero if it didn't find an object
+        if (test != 0) // QueryDosDevice returns zero if not valid
         {
             DosDevice dd;
             dd.name = str.c_str();
@@ -153,9 +166,8 @@ bool COM::SerialPort::get_port() //added function to find the present serial
     else
     {
         LOG_RAW(Common::log_color::green | Common::log_color::intensify, "Found com-ports:\n");
-        
-        LOG_RAW(Common::log_color::green | Common::log_color::intensify, "ID", " - ", "COM-X", " - ", "DEVICE-NAME", "\n");
         int i = 0;
+
         for (auto item : devices)
         {
             LOG_RAW(Common::log_color::green | Common::log_color::intensify, i, " - ", "COM", item.id, " - ", item.path, "\n");
@@ -174,17 +186,10 @@ bool COM::SerialPort::get_port() //added function to find the present serial
             }
         } 
         while (input == -1);
-
-        std::string helper = "\\\\.\\COM" + std::to_string(devices.at(input).id);
-        portName = helper.c_str();
+        portName = std::string("\\\\.\\COM" + std::to_string(devices.at(input).id));
     }
 
     return gotPort;
-}
-
-void COM::SerialPort::close()
-{
-    this->~SerialPort();
 }
 
 BOOL COM::CloseHandle_s(HANDLE handle)

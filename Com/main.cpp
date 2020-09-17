@@ -2,25 +2,33 @@
 #include "logger.hpp"
 #include "Serial.h"
 
-#define DATA_LENGTH 255
+// max data to send
 
 int main()
 {
 	using namespace Common;
-	auto logger_instance = std::make_unique<logger>();
-	
-	const char* test_msg = "150:10;\n";
 
+	auto logger_instance = std::make_unique<logger>();
+
+	std::string portName;
 	COM::SerialPort* SerialPort;
 
-	SerialPort = new COM::SerialPort();
+	if (!COM::select_port(portName))
+	{
+		LOG_ERROR("INVALID SERIAL PORT SELECTED!");
+		return 0;
+	}
+
+	SerialPort = new COM::SerialPort(portName.c_str());
 	if (SerialPort->is_connected()) 
 	{
 		LOG_INFO("Successfully connected to serial-port!");
 
-		for (int i = 0;i < 10; i++)
-			if (SerialPort->write(test_msg, DATA_LENGTH))
-				LOG_INFO("Sended message.");
+		for (int i = 0;i < 20; i++)
+		{
+			SerialPort->move_mouse(150, 0);
+			Sleep(250);
+		}
 	}
 
 	SerialPort->close();
